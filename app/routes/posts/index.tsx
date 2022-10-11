@@ -14,13 +14,20 @@ export const loader = async () => {
 
 export default function Posts() {
   const { posts }: LoaderData = useLoaderData();
-  console.log(posts);
+
   return (
     <main>
       <h1>Posts</h1>
+      <Link to="admin" className="text-red-600 underline">
+        Admin
+      </Link>
       <ul>
         {posts.map((post) => (
           <li key={post.slug}>
+            <p className="text-sm font-bold">
+              {new Date(post.createdAt).getFullYear()} /{" "}
+              {new Date(post.createdAt).getMonth() + 1}
+            </p>
             <Link to={post.slug} className="text-blue-600 underline">
               {post.title}
             </Link>
