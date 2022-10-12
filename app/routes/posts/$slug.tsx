@@ -1,7 +1,7 @@
 import { marked } from "marked";
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import type { Post } from "~/models/post.server";
@@ -28,6 +28,9 @@ export default function PostSlug() {
         {post.title}
       </h1>
 
+      <Link to="/posts/admin" className="mb-4 text-blue-600 underline">
+        Admin Dashboard
+      </Link>
       <p className="px-2" dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
