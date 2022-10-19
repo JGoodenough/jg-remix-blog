@@ -2,7 +2,7 @@ import cx from "classnames";
 import invariant from "tiny-invariant";
 
 import { ActionFunction, redirect, json } from "@remix-run/node";
-import { Form, useActionData, useTransition } from "@remix-run/react";
+import { Form, useActionData, useCatch, useParams, useTransition } from "@remix-run/react";
 import type { Maybe, Optional } from "~/global.types";
 
 import { createPost } from "~/models/post.server";=
@@ -111,6 +111,19 @@ export default function NewPost() {
       </p>
     </Form>
   );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const params = useParams();
+  if (caught.status === 404) {
+    return (
+      <div className="text-red-500">
+        Uh oh! The post with the slug "{params.slug}" does not exist!
+      </div>
+    );
+  }
+  throw new Error(`Unsupported thrown response status code: ${caught.status}`);
 }
 
 export function ErrorBoundary({ error }: { error: unknown }) {
