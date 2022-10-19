@@ -16,8 +16,8 @@ export default function Posts() {
   const { posts }: LoaderData = useLoaderData();
 
   return (
-    <main>
-      <h1>Posts</h1>
+    <main className="mx-auto max-w-4xl">
+      <h1 className="my-6 mb-2 border-b-2 text-center text-3xl">Posts</h1>
       <Link to="admin" className="text-red-600 underline">
         Admin
       </Link>
