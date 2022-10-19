@@ -7,6 +7,7 @@ import type { Maybe, Optional } from "~/global.types";
 
 import { createPost } from "~/models/post.server";
 import { stringify } from "querystring";
+import NewPostLink from "~/components/NewPostLink/new-post-link";
 
 type ActionData = Optional<{
   title: Maybe<string>;
@@ -51,7 +52,9 @@ export default function NewPost() {
   const transition = useTransition();
   const isCreating = Boolean(transition.submission);
 
-  return (
+  return transition.submission ? (
+    <NewPostLink />
+  ) : (
     <Form method="post">
       <p>
         <label>

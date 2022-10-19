@@ -1,7 +1,8 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useTransition } from "@remix-run/react";
 
+import type { Post } from '~/models/post.server"';
 import { getPosts } from "~/models/post.server";
 
 type LoaderData = {
@@ -14,6 +15,15 @@ export const loader: LoaderFunction = async () => {
 
 export default function AdminIndex() {
   const { posts } = useLoaderData() as LoaderData;
+  const transition = useTransition();
+
+  if (transition.submission) {
+    const newPost = Object.fromEntries(transition.submission.formData);
+    const hasNewPost = posts.find((post) => post.slug === newPost.slug);
+    if (!hasNewPost) {
+      posts.push(Object.fromEntries(transition.submission.formData) as Post);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -21,8 +31,8 @@ export default function AdminIndex() {
       <div className="grid grid-cols-4 gap-6">
         <nav className="col-span-4 md:col-span-1">
           <ul>
-            {posts.map((post) => (
-              <li key={post.slug}>
+            {posts.map((post, index) => (
+              <li key={index}>
                 <Link to={post.slug} className="text-blue-600 underline">
                   {post.title}
                 </Link>
