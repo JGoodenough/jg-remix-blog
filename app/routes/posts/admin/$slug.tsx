@@ -19,6 +19,8 @@ type ActionData = Optional<{
 }>;
 
 export const action: ActionFunction = async ({ request, params }) => {
+  // TODO: Remove timeout
+  setTimeout(() => {}, 3000);
   const formData = await request.formData();
 
   const formIntent = formData.get("formIntent");
