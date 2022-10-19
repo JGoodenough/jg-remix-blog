@@ -5,8 +5,7 @@ import { ActionFunction, redirect, json } from "@remix-run/node";
 import { Form, useActionData, useTransition } from "@remix-run/react";
 import type { Maybe, Optional } from "~/global.types";
 
-import { createPost } from "~/models/post.server";
-import { stringify } from "querystring";
+import { createPost } from "~/models/post.server";=
 import NewPostLink from "~/components/NewPostLink/new-post-link";
 
 type ActionData = Optional<{
@@ -112,4 +111,16 @@ export default function NewPost() {
       </p>
     </Form>
   );
+}
+
+export function ErrorBoundary({ error }: { error: unknown }) {
+  if (error instanceof Error) {
+    return (
+      <div className="text-red-500">
+        Oh no, something went wrong!
+        <pre>{error.message}</pre>
+      </div>
+    );
+  }
+  return <div className="text-red-500">Oh no, something went wrong!</div>;
 }
