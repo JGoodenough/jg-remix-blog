@@ -1,12 +1,7 @@
 import cx from "classnames";
 import invariant from "tiny-invariant";
-
-import {
-  ActionFunction,
-  redirect,
-  json,
-  LoaderFunction,
-} from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import {
   Form,
   useActionData,
@@ -14,8 +9,8 @@ import {
   useTransition,
 } from "@remix-run/react";
 import type { Maybe, Optional } from "~/global.types";
-
-import { getPost, Post, updatePost } from "~/models/post.server";
+import type { Post } from "~/models/post.server";
+import { getPost, updatePost, deletePost } from "~/models/post.server";
 
 type ActionData = Optional<{
   title: Maybe<string>;
@@ -23,32 +18,41 @@ type ActionData = Optional<{
   markdown: Maybe<string>;
 }>;
 
-export const action: ActionFunction = async ({ request }) => {
-  // TODO: remove me; fake delay to show loading/pending screen
-  await new Promise((res) => setTimeout(res, 5000));
+export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
 
-  const title = formData.get("title");
-  const slug = formData.get("slug");
-  const markdown = formData.get("markdown");
+  const formIntent = formData.get("formIntent");
 
-  const errors: ActionData = {
-    title: title ? null : "Title is required",
-    slug: slug ? null : "Slug is required",
-    markdown: markdown ? null : "Markdown is required",
-  };
+  if ("delete" === formIntent) {
+    const slug = params?.slug;
+    invariant(typeof slug === "string", "slug is required");
 
-  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+    await deletePost(slug);
+  } else {
+    const title = formData.get("title");
+    const markdown = formData.get("markdown");
+    const slug = formData.get("slug");
 
-  if (hasErrors) {
-    return json<ActionData>(errors);
+    const errors: ActionData = {
+      title: title ? null : "Title is required",
+      slug: slug ? null : "Slug is required",
+      markdown: markdown ? null : "Markdown is required",
+    };
+
+    const hasErrors = Object.values(errors).some(
+      (errorMessage) => errorMessage
+    );
+
+    if (hasErrors) {
+      return json<ActionData>(errors);
+    }
+
+    invariant(typeof title === "string", "title must be a string");
+    invariant(typeof slug === "string", "slug must be a string");
+    invariant(typeof markdown === "string", "markdown must be a string");
+
+    await updatePost({ title, slug, markdown });
   }
-
-  invariant(typeof title === "string", "title must be a string");
-  invariant(typeof slug === "string", "slug must be a string");
-  invariant(typeof markdown === "string", "markdown must be a string");
-
-  const post = await updatePost({ title, slug, markdown });
 
   return redirect("/posts/admin");
 };
@@ -71,7 +75,7 @@ export default function UpdatePost() {
 
   const errors = useActionData();
   const transition = useTransition();
-  const isUpdating = Boolean(transition.submission);
+  const isSubmitting = Boolean(transition.submission);
 
   return (
     <Form method="post">
@@ -123,15 +127,28 @@ export default function UpdatePost() {
           defaultValue={post?.markdown}
         />
       </p>
-      <p className="text-right">
+      <div className="flex justify-between">
+        <Form method="delete">
+          <button
+            type="submit"
+            name="formIntent"
+            disabled={isSubmitting}
+            className="rounded bg-red-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
+            value="delete"
+          >
+            {isSubmitting ? "Deleting post..." : "Delete"}
+          </button>
+        </Form>
         <button
           type="submit"
-          disabled={isUpdating}
+          name="formIntent"
+          value="update"
+          disabled={isSubmitting}
           className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
         >
-          {isUpdating ? "Updating post..." : "Update Post"}
+          {isSubmitting ? "Updating post..." : "Update Post"}
         </button>
-      </p>
+      </div>
     </Form>
   );
 }
