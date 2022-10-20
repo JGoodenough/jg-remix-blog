@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { getPosts } from "~/models/post.server";
-
+import type { Post } from "@prisma/client";
 type LoaderData = {
   posts: Awaited<ReturnType<typeof getPosts>>;
 };
@@ -13,7 +13,7 @@ export const loader = async () => {
 };
 
 export default function Posts() {
-  const { posts }: LoaderData = useLoaderData();
+  const { posts } = useLoaderData();
 
   return (
     <main className="mx-auto max-w-4xl">
@@ -22,7 +22,7 @@ export default function Posts() {
         Admin
       </Link>
       <ul>
-        {posts.map((post) => (
+        {posts.map((post: Post) => (
           <li key={post.slug}>
             <p className="text-sm font-bold">
               {new Date(post.createdAt).getFullYear()} /{" "}
