@@ -4,7 +4,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import HamburgerIcon from "../HamburgerIcon/hamburger-icon";
 import NavLogo from "../NavLogo/nav-logo";
-import { User } from "@prisma/client";
+import { useOptionalUser } from "~/utils";
 
 type NavLink = {
   to: string;
@@ -41,11 +41,11 @@ export const navLinks: Array<NavLink> = [
 
 type MainNavProps = {
   navItems: Array<NavLink>;
-  user?: User;
 };
 
-const MainNav: FC<MainNavProps> = ({ navItems, user }) => {
+const MainNav: FC<MainNavProps> = ({ navItems }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const user = useOptionalUser();
 
   const handleHamburgerClick = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -76,7 +76,7 @@ const MainNav: FC<MainNavProps> = ({ navItems, user }) => {
               </Link>
             </li>
           ))}
-          {user ? (
+          {/* {user ? (
             <li>
               <Link
                 className="block py-2 hover:text-green-600 md:p-4"
@@ -94,7 +94,7 @@ const MainNav: FC<MainNavProps> = ({ navItems, user }) => {
                 Log in
               </Link>
             </li>
-          )}
+          )} */}
         </ul>
       </div>
     </nav>
