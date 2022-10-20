@@ -11,6 +11,7 @@ import {
 import type { Maybe, Optional } from "~/global.types";
 import type { Post } from "~/models/post.server";
 import { getPost, updatePost, deletePost } from "~/models/post.server";
+import { requireUser } from "~/session.server";
 
 type ActionData = Optional<{
   title: Maybe<string>;
@@ -19,8 +20,7 @@ type ActionData = Optional<{
 }>;
 
 export const action: ActionFunction = async ({ request, params }) => {
-  // TODO: Remove timeout
-  setTimeout(() => {}, 3000);
+  await requireUser(request);
   const formData = await request.formData();
 
   const formIntent = formData.get("formIntent");
@@ -61,7 +61,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 type LoaderData = { post: Post };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  await requireUser(request);
   invariant(params.slug, `params.slug is required`);
 
   const post = await getPost(params.slug);

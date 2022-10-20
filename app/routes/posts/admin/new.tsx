@@ -2,11 +2,18 @@ import cx from "classnames";
 import invariant from "tiny-invariant";
 
 import { ActionFunction, redirect, json } from "@remix-run/node";
-import { Form, useActionData, useCatch, useParams, useTransition } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useCatch,
+  useParams,
+  useTransition,
+} from "@remix-run/react";
 import type { Maybe, Optional } from "~/global.types";
 
-import { createPost } from "~/models/post.server";=
+import { createPost } from "~/models/post.server";
 import NewPostLink from "~/components/NewPostLink/new-post-link";
+import { requireUser } from "~/session.server";
 
 type ActionData = Optional<{
   title: Maybe<string>;
@@ -15,6 +22,7 @@ type ActionData = Optional<{
 }>;
 
 export const action: ActionFunction = async ({ request }) => {
+  await requireUser(request);
   // TODO: remove me; fake delay to show loading/pending screen
   await new Promise((res) => setTimeout(res, 5000));
   const formData = await request.formData();
