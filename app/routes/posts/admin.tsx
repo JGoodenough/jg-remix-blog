@@ -11,7 +11,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUser(request);\
+  await requireUser(request);
 
   return json({ posts: await getPosts() });
 };

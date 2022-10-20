@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import HamburgerIcon from "../HamburgerIcon/hamburger-icon";
 import NavLogo from "../NavLogo/nav-logo";
+import { User } from "@prisma/client";
 
 type NavLink = {
   to: string;
@@ -25,6 +26,10 @@ export const navLinks: Array<NavLink> = [
     label: "Blog",
   },
   {
+    to: "/notes",
+    label: "Notes",
+  },
+  {
     to: "",
     label: "About",
   },
@@ -36,9 +41,10 @@ export const navLinks: Array<NavLink> = [
 
 type MainNavProps = {
   navItems: Array<NavLink>;
+  user?: User;
 };
 
-const MainNav: FC<MainNavProps> = ({ navItems = navLinks }) => {
+const MainNav: FC<MainNavProps> = ({ navItems, user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleHamburgerClick = () => {
@@ -70,6 +76,25 @@ const MainNav: FC<MainNavProps> = ({ navItems = navLinks }) => {
               </Link>
             </li>
           ))}
+          {user ? (
+            <li>
+              <Link
+                className="block py-2 hover:text-green-600 md:p-4"
+                to="/logout"
+              >
+                Log out
+              </Link>
+            </li>
+          ) : (
+            <li>
+              <Link
+                className="block py-2 hover:text-green-600 md:p-4"
+                to="/login"
+              >
+                Log in
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
